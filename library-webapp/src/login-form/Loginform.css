@@ -1,13 +1,7 @@
 .Login-form {
   width: 600px;
   height: 500px;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.7) 50%,
-    rgba(0, 0, 0, 0.7) 50%
-  );
   position: absolute;
-  backdrop-filter: blur(2px);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -18,20 +12,5 @@
   justify-content: center;
   gap: 2rem;
   align-items: center;
-}
-
-.background {
-  background-image: url('2.jpg');
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.settTextFileds {
-  color: antiquewhite;
-  font-family: Helvetica;
-  font-size: 20px;
+  border: 2px solid #ccc;
 }

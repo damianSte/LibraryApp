@@ -8,9 +8,9 @@ import {
   Grid,
   Paper,
 } from '@mui/material';
-import { mockBooks } from './mockBook';
+import { mockBooks } from '../Books/mockBook';
 import './BookList.css';
-import BookDetailsTooltip from './BookDetails/BookDetailsToolip';
+import BookDetailsTooltip from '../BookDetails/BookDetailsToolip';
 
 function BookListForm() {
   return (

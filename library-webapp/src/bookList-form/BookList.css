@@ -4,7 +4,6 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-image: url('background_book.jpg'); /* Corrected syntax */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -17,8 +16,8 @@
   gap: 20px;
   max-width: 1000px;
   width: 100%;
-  justify-content: center; /* Center the items horizontally */
-  align-items: center; /* Center the items vertically */
+  justify-content: center;
+  align-items: center;
 }
 
 .book-list-title {
@@ -38,9 +37,9 @@
   padding-right: 10px;
   padding-top: 25px;
   padding-bottom: 10px;
-  background-color: #ffffff69;
+  background-color: #ffffff;
   border-radius: 8px;
-  backdrop-filter: blur(5px);
+  box-shadow: 3px 5px 3px 2px rgba(0, 0, 0, 0.2);
   font-weight: bold;
   width: 240px;
   height: 300px;
