@@ -7,7 +7,7 @@ function HomePage() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />
-      <Box sx={{ flexGrow: 1, mt: '5%' }}>
+      <Box sx={{ flexGrow: 1, paddingTop: '60px' }}>
         <BookListForm />
       </Box>
     </Box>

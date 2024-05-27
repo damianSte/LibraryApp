@@ -6,13 +6,16 @@ import { Formik } from 'formik';
 import { useMemo } from 'react';
 import * as yup from 'yup';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
+  const navgate = useNavigate();
+
   let onSubmit = useCallback(
     (values: { username: string; password: string }, formik: any) => {
-      console.log(values);
+      navgate('/home');
     },
-    []
+    [navgate]
   );
 
   const validationSchema = useMemo(
