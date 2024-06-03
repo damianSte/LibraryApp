@@ -1,14 +1,28 @@
-import * as React from 'react';
-import { experimentalStyled as styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Paper, Grid, Typography, IconButton } from '@mui/material';
+import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import { mockBooks } from '../Books/mockBook';
 import './BookList.css';
 
+interface Book {
+  BookID: string;
+  ISBN: string;
+  Title: string;
+  Author: string;
+  Publisher: string;
+  YearPublished: number;
+  AvailableCopies: number;
+  coverImageUrl?: string;
+}
+
 function BookListForm() {
+  const navigate = useNavigate();
+
+  const handleBookClick = (book: Book) => {
+    navigate(`/book/${book.BookID}`, { state: { book } });
+  };
+
   return (
     <Box width={800} my={5} sx={{ flexGrow: 3, pl: 70 }}>
       <Grid container spacing={2}>
@@ -19,16 +33,24 @@ function BookListForm() {
                 src={book.coverImageUrl}
                 alt={book.Title}
                 className="book-cover"
-                style={{ maxWidth: '120px', maxHeight: '180px' }}
+                style={{
+                  maxWidth: '120px',
+                  maxHeight: '180px',
+                  cursor: 'pointer',
+                }}
+                onClick={() => handleBookClick(book)}
               />
-              <div className="book-info">
-                <Typography variant="subtitle1" className="book-title">
-                  {book.Title}
-                </Typography>
-                <Typography variant="body2" className="book-author">
-                  {book.Author}
-                </Typography>
-              </div>
+              <Typography
+                variant="subtitle1"
+                className="book-title"
+                onClick={() => handleBookClick(book)}
+                style={{ cursor: 'pointer' }}
+              >
+                {book.Title}
+              </Typography>
+              <Typography variant="body2" className="book-author">
+                {book.Author}
+              </Typography>
             </Paper>
           </Grid>
         ))}
@@ -36,4 +58,5 @@ function BookListForm() {
     </Box>
   );
 }
+
 export default BookListForm;

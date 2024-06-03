@@ -1,27 +1,12 @@
 .tile {
-  height: 300px;
+  height: 320px;
   width: 240px;
-  background-color: #7700ff;
   box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.4) !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.book-list {
-  display: grid;
-  gap: 20px;
-  max-width: 1000px;
-  background-color: #000;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-}
-
-.book-info {
-  text-align: center;
-}
-
 .book-title {
   font-size: 15px;
   padding: 10px;
@@ -30,14 +15,13 @@
   align-items: center;
   padding-bottom: 5px;
 }
-
 .book-author {
   font-size: 1rem;
   font-family: '' !important;
   color: #000000;
   align-items: center;
+  padding-bottom: 5px;
 }
-
 .book-cover {
   max-width: 100%;
   max-width: 100%;
