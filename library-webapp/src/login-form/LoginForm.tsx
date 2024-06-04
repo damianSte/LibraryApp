@@ -7,15 +7,24 @@ import { useMemo } from 'react';
 import * as yup from 'yup';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../api/ApiProvider';
 
 function LoginForm() {
   const navgate = useNavigate();
 
+  const apiClient = useApi();
+
   let onSubmit = useCallback(
     (values: { username: string; password: string }, formik: any) => {
-      navgate('/home');
+      apiClient.login(values).then((response) => {
+        if (response.success) {
+          navgate('/home');
+        } else {
+          formik.setFieldError('username', 'Invalid username or password');
+        }
+      });
     },
-    [navgate]
+    [apiClient, navgate]
   );
 
   const validationSchema = useMemo(
