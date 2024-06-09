@@ -10,6 +10,11 @@ function HomePage() {
   apiClient.getBooks().then((response) => {
     console.log(response);
   });
+
+  apiClient.getUserLoans(3).then((response) => {
+    console.log(response);
+  });
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />
