@@ -5,8 +5,13 @@ export interface LoanResponseDto {
   loanDate: Date;
   dueDate: Date;
   book: BookDto;
-  user: UserDetails;
 }
+
+// export class LoanDto {
+//   bookId: number | undefined;
+//   dueDate: Date | undefined;
+//   loanDate: Date | undefined;
+// }
 
 export class createLoanDto {
   bookId: number | undefined;
@@ -19,7 +24,6 @@ export class getUserLoansDto {
   loanDate: Date | undefined;
   dueDate: Date | undefined;
   book: BookDto | undefined;
-  user: UserLoanDetials | undefined;
 }
 
 export class UserLoanDetials {
@@ -27,6 +31,14 @@ export class UserLoanDetials {
   name: string | undefined;
   lastName: string | undefined;
   email: string | undefined;
+}
+
+export class getLoansPageResponseDto {
+  loans: getUserLoansDto[] | undefined;
+  currantPage: number | undefined;
+  totalPage: number | undefined;
+  totalItems: number | undefined;
+  hasMore: boolean | undefined;
 }
 
 // "loanId": 3,

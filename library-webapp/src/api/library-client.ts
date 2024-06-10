@@ -1,9 +1,15 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { LoginDto, LoginResponseDto } from './login.dto';
 import { BookResponseDto } from './book.dto';
-import { LoanResponseDto, createLoanDto, getUserLoansDto } from './loan.dto';
+import {
+  LoanResponseDto,
+  createLoanDto,
+  getLoansPageResponseDto,
+  getUserLoansDto,
+} from './loan.dto';
 import { UserDetails } from '../auth-context/authTypes';
 import { dark } from '@mui/material/styles/createPalette';
+import { ReviewDto, reviewResponseDto } from './review.dt';
 
 export type ClientResponse<T> = {
   success: boolean;
@@ -73,12 +79,14 @@ export class LibraryClient {
     userId: number
   ): Promise<ClientResponse<getUserLoansDto[] | null>> {
     try {
-      const response: AxiosResponse<getUserLoansDto[]> = await this.client.get(
-        `/loan?userId=${userId}`
-      );
+      const response: AxiosResponse<getLoansPageResponseDto> =
+        await this.client.get(`/loan?userId=${userId}`);
+
+      let loans: getUserLoansDto[] = response.data.loans || [];
+
       return {
         success: true,
-        data: response.data,
+        data: loans,
         status: response.status,
       };
     } catch (error) {
@@ -139,7 +147,7 @@ export class LibraryClient {
       return {
         success: true,
         data: response.data,
-        statusCode: response.status,
+        status: response.status,
       };
     } catch (error) {
       const axiosError = error as AxiosError<Error>;
@@ -147,7 +155,30 @@ export class LibraryClient {
       return {
         success: false,
         data: null,
-        statusCode: axiosError.response?.status || 0,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+  public async postReview(
+    data: ReviewDto
+  ): Promise<ClientResponse<reviewResponseDto | null>> {
+    try {
+      const response: AxiosResponse<reviewResponseDto> = await this.client.post(
+        `/review`,
+        data
+      );
+
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
       };
     }
   }
