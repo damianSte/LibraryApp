@@ -1,4 +1,4 @@
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import {
   AppBar,
   Box,
@@ -7,13 +7,15 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Avatar,
-  ListItemIcon,
   FormControl,
+  Autocomplete,
+  TextField,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import { AccountCircle, InputOutlined } from '@mui/icons-material';
+import { AccountCircle } from '@mui/icons-material';
+import { BookDto } from '../api/book.dto';
+import { useApi } from '../api/ApiProvider';
 
 export default function MenuAppBar() {
   const navigate = useNavigate();
@@ -42,10 +44,31 @@ export default function MenuAppBar() {
   };
 
   const handleLogout = () => {
-    // Add your logout logic here
     console.log('User logged out');
     handleAccountMenuClose();
   };
+
+  const [books, setBooks] = useState<BookDto[]>([]);
+  const client = useApi();
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await client.getBooks();
+        if (response.success && response.data !== null) {
+          setBooks(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
+
+    fetchBooks();
+  }, [client]);
+
+  const bookListAutocomplete = books.map((book) => ({
+    label: book.title,
+  }));
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: 'black' }}>
@@ -67,6 +90,13 @@ export default function MenuAppBar() {
         >
           LIBRARY
         </Typography>
+        {/* <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={bookListAutocomplete}
+          sx={{ width: 300, backfaceVisibility: 'white' }}
+          renderInput={(params) => <TextField {...params} label="Search" />}
+        /> */}
         <Box display="flex" alignItems="center">
           <FormControl>
             <Select
