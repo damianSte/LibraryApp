@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-radius: 12px !important;
 }
 .book-title {
   font-size: 15px;

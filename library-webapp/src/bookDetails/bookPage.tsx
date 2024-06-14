@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Box, Typography, Button } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Typography, Button, Tab, Tabs } from '@mui/material';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { useApi } from '../api/ApiProvider';
-import { useAuth } from '../auth-context/AuthProvider';
-import { BookDto } from '../api/book.dto';
-import { UserDetails } from '../auth-context/authTypes';
+import ReviewComponent from '../review-form/ReviewComponent';
 
 function BookPage() {
   const location = useLocation();
   const book = location.state?.book;
+  const userId = '1';
   const apiClient = useApi();
   const navgate = useNavigate();
 
@@ -21,6 +20,12 @@ function BookPage() {
   };
 
   const [showReviews, setShowReviews] = useState(false);
+
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setTabIndex(newValue);
+  };
 
   let onSubmit = useCallback(
     (values: { bookId: number; userId: string; dueDate: Date }) => {
@@ -44,8 +49,11 @@ function BookPage() {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        height="80vh"
+        height="auto"
         p={2}
+        pt={15}
+        pb={10}
+        sx={{ backgroundColor: '#f5f5f5' }}
       >
         <Box
           display="flex"
@@ -54,6 +62,8 @@ function BookPage() {
           sx={{
             boxShadow: 3,
             borderRadius: 2,
+            mb: 5,
+            bgcolor: 'white',
           }}
           height="400px"
           width="800px"
@@ -92,44 +102,35 @@ function BookPage() {
             </Typography>
 
             <Button
-              sx={{ mt: 5, backgroundColor: 'black', color: 'white' }}
+              sx={{ mt: 12, backgroundColor: 'black', color: 'white' }}
               variant="contained"
               disabled={!book.available}
               onClick={() =>
                 onSubmit({
                   bookId: book.bookId,
-                  userId: '3',
+                  userId: '2',
                   dueDate: calculateDueDate(),
                 })
               }
             >
               Loan
             </Button>
-            <Button
-              sx={{ mt: 5, backgroundColor: 'black', color: 'white' }}
-              variant="contained"
-              onClick={() => setShowReviews(!showReviews)}
-            >
-              {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-            </Button>
-            {showReviews && (
-              <Box>
-                <Typography variant="h5" sx={{ mt: 3 }}>
-                  Reviews
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body1">
-                    <strong>User1:</strong> This book was amazing! I couldn't
-                    put it down.
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>User2:</strong> I found the plot a bit slow, but the
-                    characters were interesting.
-                  </Typography>
-                  {/* Add more reviews as needed */}
-                </Box>
-              </Box>
-            )}
+          </Box>
+        </Box>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          p={6}
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            width: '800px',
+            backgroundColor: 'white',
+          }}
+        >
+          <Box p={3}>
+            <ReviewComponent />
           </Box>
         </Box>
       </Box>

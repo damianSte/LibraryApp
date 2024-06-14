@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../ApiProvider';
-import { getUserLoansDto } from '../loan.dto';
-import MenuAppBar from '../../menu-app-bar/MenuAppBar';
+import { useApi } from '../api/ApiProvider';
+import { getUserLoansDto } from '../api/dto/loan.dto';
+import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 
 export default function LoanComponent() {
   const [loans, setLoans] = useState<getUserLoansDto[]>([]);
   const client = useApi();
-
-  // Replace with actual user ID from auth context/ local storage. message: "Endpoint /user not found"
-  const userId = 5;
+  const userId = 2;
 
   useEffect(() => {
     const fetchLoans = async () => {

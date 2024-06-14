@@ -1,10 +1,7 @@
-import { Autocomplete, Box, TextField } from '@mui/material';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
-import { useNavigate } from 'react-router-dom';
-import BookListForm from '../bookList-form/BookListFrom';
 import { useApi } from '../api/ApiProvider';
-import { useEffect, useState } from 'react';
-import { BookDto } from '../api/book.dto';
+import BookListForm from '../bookList-form/BookListFrom';
+import { Box } from '@mui/material';
 
 function HomePage() {
   const apiClient = useApi();
@@ -13,10 +10,9 @@ function HomePage() {
     console.log(response);
   });
 
-  apiClient.getUserLoans(3).then((response) => {
+  apiClient.getReview(9).then((response) => {
     console.log(response);
   });
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />

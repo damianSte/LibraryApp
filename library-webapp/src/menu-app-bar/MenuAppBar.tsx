@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -8,25 +8,34 @@ import {
   MenuItem,
   IconButton,
   FormControl,
-  Autocomplete,
-  TextField,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import { AccountCircle } from '@mui/icons-material';
-import { BookDto } from '../api/book.dto';
+import { AccountCircle, Settings, ExitToApp, Book } from '@mui/icons-material';
+import { BookDto } from '../api/dto/book.dto';
 import { useApi } from '../api/ApiProvider';
 
 export default function MenuAppBar() {
   const navigate = useNavigate();
   const [accountMenuAnchor, setAccountMenuAnchor] =
     useState<HTMLElement | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false); // State for drawer open/close
 
-  const handleAccountMenuOpen = (event: SyntheticEvent) => {
+  const handleAccountMenuOpen = (event: React.SyntheticEvent) => {
     setAccountMenuAnchor(event.currentTarget as HTMLElement);
   };
+
   const handleAccountMenuClose = () => {
     setAccountMenuAnchor(null);
+  };
+
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
   };
 
   const navigateToLogin = () => {
@@ -36,6 +45,7 @@ export default function MenuAppBar() {
 
   const navigateToHomePage = () => {
     navigate('/home');
+    handleAccountMenuClose();
   };
 
   const navigateToMyAccount = () => {
@@ -71,73 +81,62 @@ export default function MenuAppBar() {
   }));
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: 'black' }}>
-      <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer' }}
-          onClick={navigateToHomePage}
-        >
-          LIBRARY
-        </Typography>
-        {/* <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={bookListAutocomplete}
-          sx={{ width: 300, backfaceVisibility: 'white' }}
-          renderInput={(params) => <TextField {...params} label="Search" />}
-        /> */}
-        <Box display="flex" alignItems="center">
-          <FormControl>
-            <Select
-              open={Boolean(accountMenuAnchor)}
-              onClose={handleAccountMenuClose}
-              onOpen={handleAccountMenuOpen}
-              value=""
-              IconComponent={() => (
-                <AccountCircle
-                  fontSize="large"
-                  sx={{ color: 'white', cursor: 'pointer' }}
-                />
-              )}
-              sx={{
-                '.MuiSelect-select': {
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 0,
-                },
-                '.MuiOutlinedInput-notchedOutline': {
-                  border: 0,
-                },
-              }}
-              MenuProps={{
-                anchorEl: accountMenuAnchor,
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
-            >
-              <MenuItem onClick={navigateToMyAccount}>My Account</MenuItem>
-              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Toolbar>
-    </AppBar>
+    <React.Fragment>
+      <AppBar position="fixed" sx={{ backgroundColor: 'black' }}>
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={toggleDrawer(true)} // Open drawer on click
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, cursor: 'pointer' }}
+            onClick={navigateToHomePage}
+          >
+            LIBRARY
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        sx={{ width: 240 }}
+      >
+        <List>
+          <ListItem button onClick={navigateToMyAccount}>
+            <ListItemIcon>
+              <AccountCircle />
+            </ListItemIcon>
+            <ListItemText primary="My Account" />
+          </ListItem>
+          <ListItem button onClick={navigateToHomePage}>
+            <ListItemIcon>
+              <Book />
+            </ListItemIcon>
+            <ListItemText primary="Book List" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <Settings />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItem>
+          <ListItem button onClick={handleLogout}>
+            <ListItemIcon>
+              <ExitToApp />
+            </ListItemIcon>
+            <ListItemText primary="Log Out" />
+          </ListItem>
+        </List>
+      </Drawer>
+    </React.Fragment>
   );
 }

@@ -5,7 +5,6 @@ import './Loginform.css';
 import { Formik } from 'formik';
 import { useMemo } from 'react';
 import * as yup from 'yup';
-import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../api/ApiProvider';
 
@@ -34,7 +33,7 @@ function LoginForm() {
         password: yup
           .string()
           .required('Password is required')
-          .min(6, 'Password too short'),
+          .min(3, 'Password too short'),
       }),
     []
   );

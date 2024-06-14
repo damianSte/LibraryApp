@@ -1,15 +1,17 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { LoginDto, LoginResponseDto } from './login.dto';
-import { BookResponseDto } from './book.dto';
+import { LoginDto, LoginResponseDto } from './dto/login.dto';
+import { BookResponseDto } from './dto/book.dto';
 import {
   LoanResponseDto,
   createLoanDto,
   getLoansPageResponseDto,
   getUserLoansDto,
-} from './loan.dto';
-import { UserDetails } from '../auth-context/authTypes';
-import { dark } from '@mui/material/styles/createPalette';
-import { ReviewDto, reviewResponseDto } from './review.dt';
+} from './dto/loan.dto';
+import {
+  CreateReviewDto,
+  ReviewResponseDto,
+  ReviewResponseListDto,
+} from './dto/review.dto';
 
 export type ClientResponse<T> = {
   success: boolean;
@@ -17,13 +19,18 @@ export type ClientResponse<T> = {
   status: number;
 };
 
+const tokenId = 'token';
 export class LibraryClient {
   private client: AxiosInstance;
 
   constructor() {
     console.log('LibraryClient');
+    const token = localStorage.getItem(tokenId);
     this.client = axios.create({
       baseURL: 'http://localhost:8080/api',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
@@ -38,6 +45,8 @@ export class LibraryClient {
       this.client.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${response.data.token}`;
+
+      localStorage.setItem(tokenId, response.data.token ?? '');
 
       return {
         success: true,
@@ -122,28 +131,14 @@ export class LibraryClient {
       };
     }
   }
-  public async userInfo(): Promise<ClientResponse<UserDetails | null>> {
+
+  public async getReview(
+    bookId: number
+  ): Promise<ClientResponse<ReviewResponseDto[] | null>> {
     try {
-      const response: AxiosResponse<UserDetails> = await this.client.get(
-        '/user'
-      );
-      return {
-        success: true,
-        data: response.data,
-        status: response.status,
-      };
-    } catch (error) {
-      const axiosError = error as AxiosError<Error>;
-      return {
-        success: false,
-        data: null,
-        status: axiosError.response?.status || 0,
-      };
-    }
-  }
-  public async getReviewByBookId(bookId: number) {
-    try {
-      const response = await this.client.get(`/reviews/book/${bookId}`);
+      const response: AxiosResponse<ReviewResponseDto[]> =
+        await this.client.get(`/review/book/${bookId}`);
+
       return {
         success: true,
         data: response.data,
@@ -159,15 +154,13 @@ export class LibraryClient {
       };
     }
   }
-  public async postReview(
-    data: ReviewDto
-  ): Promise<ClientResponse<reviewResponseDto | null>> {
+
+  public async postReview(data: CreateReviewDto) {
     try {
-      const response: AxiosResponse<reviewResponseDto> = await this.client.post(
-        `/review`,
+      const response: AxiosResponse<ReviewResponseDto> = await this.client.post(
+        '/review',
         data
       );
-
       return {
         success: true,
         data: response.data,
@@ -175,6 +168,25 @@ export class LibraryClient {
       };
     } catch (error) {
       const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async getMe() {
+    try {
+      const response = await this.client.get('/users/me');
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
       return {
         success: false,
         data: null,
