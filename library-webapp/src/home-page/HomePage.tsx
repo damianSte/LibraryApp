@@ -2,8 +2,11 @@ import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { useApi } from '../api/ApiProvider';
 import BookListForm from '../bookList-form/BookListFrom';
 import { Box } from '@mui/material';
+import { useAuth } from '../auth-context/AuthProvider';
 
 function HomePage() {
+  const apiClient = useApi();
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />

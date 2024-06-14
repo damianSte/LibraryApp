@@ -19,3 +19,13 @@ export class BookResponseDto {
   available: boolean | undefined;
   coverImageUrl: string | undefined;
 }
+
+export class CreateBookDto {
+  isbn: string | undefined;
+  title: string | undefined;
+  author: string | undefined;
+  publisher: string | undefined;
+  publicationYear: number | undefined;
+  availableCopies: number | undefined;
+  coverImageUrl: string | undefined;
+}

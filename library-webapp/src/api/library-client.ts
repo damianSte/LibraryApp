@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { LoginDto, LoginResponseDto } from './dto/login.dto';
-import { BookResponseDto } from './dto/book.dto';
+import { BookResponseDto, CreateBookDto } from './dto/book.dto';
 import {
   LoanResponseDto,
   createLoanDto,
@@ -13,6 +13,7 @@ import {
   ReviewResponseListDto,
 } from './dto/review.dto';
 import { MeDetails } from './dto/me.dto';
+import { RegisterDto, RegisterResponseDto } from './dto/register.dto';
 
 export type ClientResponse<T> = {
   success: boolean;
@@ -48,6 +49,29 @@ export class LibraryClient {
       ] = `Bearer ${response.data.token}`;
 
       localStorage.setItem(tokenId, response.data.token ?? '');
+
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async register(
+    data: RegisterDto
+  ): Promise<ClientResponse<RegisterResponseDto | null>> {
+    try {
+      const response: AxiosResponse<RegisterResponseDto> =
+        await this.client.post('/auth/register', data);
 
       return {
         success: true,
@@ -183,6 +207,27 @@ export class LibraryClient {
     try {
       const response: AxiosResponse<ReviewResponseDto> = await this.client.post(
         '/review',
+        data
+      );
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async postBook(data: CreateBookDto) {
+    try {
+      const response: AxiosResponse<ReviewResponseDto> = await this.client.post(
+        '/books',
         data
       );
       return {

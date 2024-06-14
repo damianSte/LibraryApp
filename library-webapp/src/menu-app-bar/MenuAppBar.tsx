@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   AppBar,
-  Box,
   Toolbar,
   Typography,
-  Select,
-  MenuItem,
   IconButton,
-  FormControl,
   Drawer,
   List,
   ListItem,
@@ -24,7 +20,8 @@ export default function MenuAppBar() {
   const navigate = useNavigate();
   const [accountMenuAnchor, setAccountMenuAnchor] =
     useState<HTMLElement | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false); // State for drawer open/close
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string>('');
   const client = useApi();
 
   const handleAccountMenuOpen = (event: React.SyntheticEvent) => {
@@ -44,6 +41,11 @@ export default function MenuAppBar() {
     handleAccountMenuClose();
   };
 
+  const navigateToAdminProfile = () => {
+    navigate('/admin-profile');
+    handleAccountMenuClose();
+  };
+
   const navigateToHomePage = () => {
     navigate('/home');
     handleAccountMenuClose();
@@ -56,12 +58,9 @@ export default function MenuAppBar() {
 
   const handleLogout = () => {
     console.log('User logged out');
-    client.logout(); // Clear token and reset headers
-    clearUserData(); // Clear user-specific state
-    navigateToLogin(); // Redirect to login page after logout
+    client.logout();
+    navigateToLogin();
   };
-
-  const clearUserData = () => {};
 
   const [books, setBooks] = useState<BookDto[]>([]);
 
@@ -80,6 +79,17 @@ export default function MenuAppBar() {
     fetchBooks();
   }, [client]);
 
+  useEffect(() => {
+    const getUser = async () => {
+      const me = await client.getMe();
+      if (me.success && me.data !== null) {
+        console.log(me.data);
+        setUserRole(me.data?.role ?? '');
+      }
+    };
+    getUser();
+  }, [client]);
+
   return (
     <React.Fragment>
       <AppBar position="fixed" sx={{ backgroundColor: 'black' }}>
@@ -90,7 +100,7 @@ export default function MenuAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-            onClick={toggleDrawer(true)} // Open drawer on click
+            onClick={toggleDrawer(true)}
           >
             <MenuIcon />
           </IconButton>
@@ -123,12 +133,14 @@ export default function MenuAppBar() {
             </ListItemIcon>
             <ListItemText primary="Book List" />
           </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <Settings />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
+          {userRole === 'ROLE_ADMIN' && (
+            <ListItem button onClick={navigateToAdminProfile}>
+              <ListItemIcon>
+                <Settings />
+              </ListItemIcon>
+              <ListItemText primary="ADMIN PROFILE" />
+            </ListItem>
+          )}
           <ListItem button onClick={handleLogout}>
             <ListItemIcon>
               <ExitToApp />

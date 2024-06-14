@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import LoanComponent from '../loans-form/LoanComponent';
-import Options from './options-form/Options';
-import UserReviewListForMyAccount from './UserReviewListForMyAccount';
-export default function MyAccount() {
-  const [selectedOption, setSelectedOption] = useState('loans');
+import { Create } from '@mui/icons-material';
+import CreateBook from './CreateBook';
+import CreateUser from './CreateUser';
+
+export default function AdminProfile() {
+  const [selectedOption, setSelectedOption] = useState('');
 
   const renderContent = () => {
     switch (selectedOption) {
-      case 'loans':
-        return <LoanComponent />;
-      case 'reviews':
-        return <UserReviewListForMyAccount />;
+      case 'createBook':
+        return <CreateBook />;
+      case 'register':
+        return <CreateUser />;
       default:
         return null;
     }
@@ -25,7 +26,6 @@ export default function MyAccount() {
   return (
     <>
       <MenuAppBar />
-
       <Box
         sx={{
           backgroundColor: '#f5f5f5',
@@ -48,22 +48,24 @@ export default function MyAccount() {
                 <Grid item xs={12} md={3} mt={10}>
                   <Typography variant="h6">Options</Typography>
                   <Button
-                    onClick={() => handleOptionClick('loans')}
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    variant={selectedOption === 'loans' ? 'contained' : 'text'}
-                  >
-                    Loans
-                  </Button>
-                  <Button
-                    onClick={() => handleOptionClick('reviews')}
+                    onClick={() => handleOptionClick('createBook')}
                     fullWidth
                     sx={{ mt: 2 }}
                     variant={
-                      selectedOption === 'reviews' ? 'contained' : 'text'
+                      selectedOption === 'createBook' ? 'contained' : 'text'
                     }
                   >
-                    Reviews
+                    Crate Book
+                  </Button>
+                  <Button
+                    onClick={() => handleOptionClick('register')}
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    variant={
+                      selectedOption === 'register' ? 'contained' : 'text'
+                    }
+                  >
+                    Register user
                   </Button>
                 </Grid>
               </Grid>

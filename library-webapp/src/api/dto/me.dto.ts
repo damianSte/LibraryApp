@@ -3,4 +3,5 @@ export class MeDetails {
   name: string | undefined;
   lastName: string | undefined;
   email: string | undefined;
+  role: string | undefined;
 }

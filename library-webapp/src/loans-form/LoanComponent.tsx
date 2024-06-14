@@ -6,13 +6,11 @@ import {
   List,
   ListItem,
   ListItemText,
-  Paper,
   Pagination,
   Typography,
 } from '@mui/material';
 import { useApi } from '../api/ApiProvider';
 import { getUserLoansDto } from '../api/dto/loan.dto';
-import { useUser } from '../user/UserProvider';
 
 export default function LoanComponent() {
   const [loans, setLoans] = useState<getUserLoansDto[]>([]);
