@@ -4,15 +4,6 @@ import BookListForm from '../bookList-form/BookListFrom';
 import { Box } from '@mui/material';
 
 function HomePage() {
-  const apiClient = useApi();
-
-  apiClient.getBooks().then((response) => {
-    console.log(response);
-  });
-
-  apiClient.getReview(9).then((response) => {
-    console.log(response);
-  });
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />

@@ -54,8 +54,8 @@ export default function ReviewComponent() {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      p={2}
-      sx={{ borderRadius: 2, width: '800px', mt: 2, backgroundColor: 'white' }}
+      p={8}
+      sx={{ borderRadius: 2, width: '800px', backgroundColor: 'white' }}
     >
       <Typography variant="h6">Share your Review!</Typography>
       <Rating

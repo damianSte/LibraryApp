@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { MeDetails } from '../api/dto/me.dto';
 
 export type UserResponse<T> = {
   success: boolean;
@@ -22,14 +23,9 @@ export class LibraryUser {
 
   public async getMe() {
     try {
-      const response = await this.user.get('/users/me');
-
-      this.user.defaults.headers.common[
-        'Auth'
-      ] = `User info ${response.data.user}`;
-
-      localStorage.setItem(userInfo, response.data.user);
-
+      const response: AxiosResponse<MeDetails> = await this.user.get(
+        '/user/me'
+      );
       return {
         success: true,
         data: response.data,

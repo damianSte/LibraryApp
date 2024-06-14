@@ -78,19 +78,19 @@ export default function UsersReviewList() {
                     <Typography
                       component="span"
                       variant="body2"
-                      color="textPrimary"
-                    >
-                      {review.comment}
-                    </Typography>
-                    <Typography
-                      component="span"
-                      variant="body2"
                       color="textSecondary"
                       display="block"
                     >
                       {review.reviewDate
                         ? new Date(review.reviewDate).toLocaleDateString()
                         : ''}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="subtitle1"
+                      color="textPrimary"
+                    >
+                      {review.comment}
                     </Typography>
                   </>
                 }
@@ -100,7 +100,6 @@ export default function UsersReviewList() {
           </React.Fragment>
         ))}
       </List>
-      {/* Pagination component */}
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
           count={Math.ceil(reviews.length / reviewsPerPage)}

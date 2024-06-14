@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Typography, Button, Tab, Tabs } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { useApi } from '../api/ApiProvider';
 import ReviewComponent from '../review-form/ReviewComponent';
@@ -8,7 +8,6 @@ import ReviewComponent from '../review-form/ReviewComponent';
 function BookPage() {
   const location = useLocation();
   const book = location.state?.book;
-  const userId = '1';
   const apiClient = useApi();
   const navgate = useNavigate();
 
@@ -17,14 +16,6 @@ function BookPage() {
     const dueDate = new Date();
     dueDate.setDate(today.getDate() + 30);
     return dueDate;
-  };
-
-  const [showReviews, setShowReviews] = useState(false);
-
-  const [tabIndex, setTabIndex] = useState(0);
-
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabIndex(newValue);
   };
 
   let onSubmit = useCallback(
@@ -121,7 +112,7 @@ function BookPage() {
           display="flex"
           flexDirection="column"
           alignItems="center"
-          p={6}
+          p={8}
           sx={{
             boxShadow: 3,
             borderRadius: 2,
@@ -129,7 +120,7 @@ function BookPage() {
             backgroundColor: 'white',
           }}
         >
-          <Box p={3}>
+          <Box>
             <ReviewComponent />
           </Box>
         </Box>

@@ -12,6 +12,7 @@ import {
   ReviewResponseDto,
   ReviewResponseListDto,
 } from './dto/review.dto';
+import { MeDetails } from './dto/me.dto';
 
 export type ClientResponse<T> = {
   success: boolean;
@@ -155,6 +156,29 @@ export class LibraryClient {
     }
   }
 
+  public async deleteReview(
+    reviewId: number
+  ): Promise<ClientResponse<ReviewResponseDto[] | null>> {
+    try {
+      const response: AxiosResponse<ReviewResponseDto[]> =
+        await this.client.delete(`/review/${reviewId}`);
+
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
   public async postReview(data: CreateReviewDto) {
     try {
       const response: AxiosResponse<ReviewResponseDto> = await this.client.post(
@@ -176,9 +200,13 @@ export class LibraryClient {
     }
   }
 
-  public async getMe() {
+  public async getUserReviews(
+    userId: number
+  ): Promise<ClientResponse<ReviewResponseDto[] | null>> {
     try {
-      const response = await this.client.get('/users/me');
+      const response: AxiosResponse<ReviewResponseDto[]> =
+        await this.client.get(`/review/user/${userId}`);
+
       return {
         success: true,
         data: response.data,
@@ -193,5 +221,31 @@ export class LibraryClient {
         status: axiosError.response?.status || 0,
       };
     }
+  }
+
+  public async getMe() {
+    try {
+      const response: AxiosResponse<MeDetails> = await this.client.get(
+        '/user/me'
+      );
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public logout(): void {
+    localStorage.removeItem(tokenId);
+    delete this.client.defaults.headers.common['Authorization'];
   }
 }

@@ -25,6 +25,7 @@ export default function MenuAppBar() {
   const [accountMenuAnchor, setAccountMenuAnchor] =
     useState<HTMLElement | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false); // State for drawer open/close
+  const client = useApi();
 
   const handleAccountMenuOpen = (event: React.SyntheticEvent) => {
     setAccountMenuAnchor(event.currentTarget as HTMLElement);
@@ -55,11 +56,14 @@ export default function MenuAppBar() {
 
   const handleLogout = () => {
     console.log('User logged out');
-    handleAccountMenuClose();
+    client.logout(); // Clear token and reset headers
+    clearUserData(); // Clear user-specific state
+    navigateToLogin(); // Redirect to login page after logout
   };
 
+  const clearUserData = () => {};
+
   const [books, setBooks] = useState<BookDto[]>([]);
-  const client = useApi();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -75,10 +79,6 @@ export default function MenuAppBar() {
 
     fetchBooks();
   }, [client]);
-
-  const bookListAutocomplete = books.map((book) => ({
-    label: book.title,
-  }));
 
   return (
     <React.Fragment>
