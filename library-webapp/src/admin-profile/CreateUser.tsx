@@ -9,7 +9,6 @@ import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 export default function CreateUser() {
   const apiClient = useApi();
 
-  // Validation schema for the form fields
   const validationSchema = yup.object().shape({
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
@@ -20,7 +19,6 @@ export default function CreateUser() {
   const onSubmit = useCallback(
     (
       values: {
-        // add first name and last name
         username: string;
         password: string;
         role: string;
@@ -37,7 +35,7 @@ export default function CreateUser() {
       });
       formik.resetForm();
     },
-    []
+    [apiClient]
   );
 
   return (
@@ -46,13 +44,14 @@ export default function CreateUser() {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      p={8}
+      p={6}
       sx={{
         borderRadius: 2,
         width: '700px',
         backgroundColor: 'white',
       }}
     >
+      <h2>Register New User</h2>
       <Formik
         initialValues={{
           username: '',

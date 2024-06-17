@@ -1,4 +1,3 @@
-import { UserDetails } from '../../auth-context/authTypes';
 import { BookDto } from './book.dto';
 
 //used
@@ -11,7 +10,7 @@ export interface LoanResponseDto {
 //used
 export class createLoanDto {
   bookId: number | undefined;
-  userId: string | undefined;
+  userId: number | undefined;
   dueDate: Date | undefined;
 }
 

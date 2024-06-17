@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 import { useApi } from '../api/ApiProvider';
 import { Box } from '@mui/material';
 
@@ -45,7 +44,7 @@ function CreateBook() {
       });
       formik.resetForm();
     },
-    []
+    [apiClient]
   );
 
   return (
@@ -54,13 +53,14 @@ function CreateBook() {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      p={8}
+      p={6}
       sx={{
         borderRadius: 2,
         width: '700px',
         backgroundColor: 'white',
       }}
     >
+      <h2>Create New Book</h2>
       <Formik
         initialValues={{
           isbn: '',

@@ -42,7 +42,9 @@ export default function MenuAppBar() {
   };
 
   const navigateToAdminProfile = () => {
-    navigate('/admin-profile');
+    if (userRole === 'ROLE_ADMIN') {
+      navigate('/admin-profile');
+    }
     handleAccountMenuClose();
   };
 

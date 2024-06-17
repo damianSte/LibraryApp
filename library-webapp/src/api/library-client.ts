@@ -7,11 +7,7 @@ import {
   getLoansPageResponseDto,
   getUserLoansDto,
 } from './dto/loan.dto';
-import {
-  CreateReviewDto,
-  ReviewResponseDto,
-  ReviewResponseListDto,
-} from './dto/review.dto';
+import { CreateReviewDto, ReviewResponseDto } from './dto/review.dto';
 import { MeDetails } from './dto/me.dto';
 import { RegisterDto, RegisterResponseDto } from './dto/register.dto';
 
@@ -27,13 +23,26 @@ export class LibraryClient {
 
   constructor() {
     console.log('LibraryClient');
-    const token = localStorage.getItem(tokenId);
     this.client = axios.create({
       baseURL: 'http://localhost:8080/api',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
+
+    const token = localStorage.getItem(tokenId);
+
+    if (token) {
+      this.client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+
+    this.client.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem(tokenId);
+          this.client.defaults.headers.common['Authorization'] = '';
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   public async login(
@@ -44,12 +53,14 @@ export class LibraryClient {
         '/auth/login',
         data
       );
-      this.client.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${response.data.token}`;
 
-      localStorage.setItem(tokenId, response.data.token ?? '');
-
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem(tokenId, response.data.token ?? '');
+        this.client.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${token}`;
+      }
       return {
         success: true,
         data: response.data,
@@ -104,6 +115,28 @@ export class LibraryClient {
       return {
         success: false,
         data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async getLoans(): Promise<ClientResponse<getUserLoansDto[] | null>> {
+    try {
+      const response: AxiosResponse<getLoansPageResponseDto> =
+        await this.client.get(`/loan`);
+
+      let loans: getUserLoansDto[] = response.data.loans || [];
+
+      return {
+        success: true,
+        data: loans,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: [],
         status: axiosError.response?.status || 0,
       };
     }
@@ -186,6 +219,29 @@ export class LibraryClient {
     try {
       const response: AxiosResponse<ReviewResponseDto[]> =
         await this.client.delete(`/review/${reviewId}`);
+
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async deleteBook(
+    bookId: number
+  ): Promise<ClientResponse<BookResponseDto[] | null>> {
+    try {
+      const response: AxiosResponse<BookResponseDto[]> =
+        await this.client.delete(`/books/${bookId}`);
 
       return {
         success: true,
@@ -290,7 +346,7 @@ export class LibraryClient {
   }
 
   public logout(): void {
-    localStorage.removeItem(tokenId);
+    localStorage.removeItem('token');
     delete this.client.defaults.headers.common['Authorization'];
   }
 }

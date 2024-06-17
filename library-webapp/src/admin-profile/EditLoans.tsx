@@ -1,4 +1,6 @@
+import { getLoansPageResponseDto, getUserLoansDto } from '../api/dto/loan.dto';
 import React, { useEffect, useState } from 'react';
+import { useApi } from '../api/ApiProvider';
 import {
   Box,
   Divider,
@@ -6,30 +8,28 @@ import {
   ListItem,
   ListItemText,
   Pagination,
+  TextField,
   Typography,
 } from '@mui/material';
-import { useApi } from '../api/ApiProvider';
-import { getUserLoansDto } from '../api/dto/loan.dto';
 
-export default function LoanComponent() {
+export default function EditLoans() {
   const [loans, setLoans] = useState<getUserLoansDto[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const loansPerPage = 3;
+  const [loading, setLoading] = useState<boolean>(true);
+  const client = useApi();
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedLoan, setSelectedLoan] = useState<getUserLoansDto | null>(
+    null
+  );
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const loansPerPage = 6;
   const indexOfLastLoan = currentPage * loansPerPage;
   const indexOfFirstLoan = indexOfLastLoan - loansPerPage;
   const currentLoans = loans.slice(indexOfFirstLoan, indexOfLastLoan);
 
-  const client = useApi();
-
   useEffect(() => {
     const fetchLoans = async () => {
-      const userDetails = await client.getMe();
-      const userId = userDetails.data?.id;
-      if (!userId) return;
-
-      const response = await client.getUserLoans(userId);
-
+      const response = await client.getLoans();
       if (response.success && response.data !== null) {
         const sortedLoans = response.data.sort((a, b) => {
           if (a.loanDate && b.loanDate) {
@@ -53,13 +53,28 @@ export default function LoanComponent() {
     };
   }, [client]);
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleInputChange =
+    (field: keyof getUserLoansDto) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (selectedLoan) {
+        setSelectedLoan({ ...selectedLoan, [field]: event.target.value });
+      }
+    };
+
+  const filteredLoans = loans.filter((loan) =>
+    loan.book?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
     setCurrentPage(page);
   };
-
   return (
     <Box
       display="flex"
@@ -74,31 +89,26 @@ export default function LoanComponent() {
       }}
     >
       <Typography variant="h5" gutterBottom>
-        My Loans
+        Loans
       </Typography>
+      <TextField
+        label="Search by Title"
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={handleSearchChange}
+        sx={{ mb: 2 }}
+      />
       <Box width="100%">
         <List>
-          {currentLoans.map((loan) => (
-            <React.Fragment key={loan.loandId}>
+          {filteredLoans.map((selectedLoan) => (
+            <React.Fragment key={selectedLoan.loandId}>
               <ListItem alignItems="flex-start" sx={{ width: '100%' }}>
-                <Box
-                  component="img"
-                  src={loan.book?.coverImageUrl || 'default-cover-url.jpg'}
-                  alt={loan.book?.title || 'Book cover'}
-                  sx={{
-                    maxWidth: '150px',
-                    maxHeight: '180px',
-                    marginRight: '10px',
-                  }}
-                />
                 <ListItemText
                   primary={
                     <>
                       <Typography variant="h6">
-                        {loan.book?.title ?? 'Untitled'}
-                      </Typography>
-                      <Typography variant="subtitle1">
-                        {loan.book?.author ?? 'Unknown Author'}
+                        {selectedLoan.book?.title ?? 'Untitled'}
                       </Typography>
                     </>
                   }
@@ -110,8 +120,8 @@ export default function LoanComponent() {
                         color="textPrimary"
                       >
                         Loan Date:{' '}
-                        {loan.loanDate
-                          ? new Date(loan.loanDate).toLocaleDateString()
+                        {selectedLoan.loanDate
+                          ? new Date(selectedLoan.loanDate).toLocaleDateString()
                           : 'N/A'}
                       </Typography>
                       <Typography
@@ -121,8 +131,8 @@ export default function LoanComponent() {
                         display="block"
                       >
                         Due Date:{' '}
-                        {loan.dueDate
-                          ? new Date(loan.dueDate).toLocaleDateString()
+                        {selectedLoan.dueDate
+                          ? new Date(selectedLoan.dueDate).toLocaleDateString()
                           : 'N/A'}
                       </Typography>
                     </>
