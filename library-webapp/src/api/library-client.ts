@@ -120,24 +120,21 @@ export class LibraryClient {
     }
   }
 
-  public async getLoans(): Promise<ClientResponse<getUserLoansDto[] | null>> {
+  public async getLoans(page: number) {
     try {
-      const response: AxiosResponse<getLoansPageResponseDto> =
-        await this.client.get(`/loan`);
-
-      let loans: getUserLoansDto[] = response.data.loans || [];
-
+      const response = await this.client.get(`/loan?page=${page}`);
       return {
         success: true,
-        data: loans,
-        status: response.status,
+        data: response.data,
+        statusCode: response.status,
       };
     } catch (error) {
       const axiosError = error as AxiosError<Error>;
+
       return {
         success: false,
-        data: [],
-        status: axiosError.response?.status || 0,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
       };
     }
   }
@@ -219,6 +216,29 @@ export class LibraryClient {
     try {
       const response: AxiosResponse<ReviewResponseDto[]> =
         await this.client.delete(`/review/${reviewId}`);
+
+      return {
+        success: true,
+        data: response.data,
+        status: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        status: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async deleteLoan(
+    loanId: number
+  ): Promise<ClientResponse<LoanResponseDto[] | null>> {
+    try {
+      const response: AxiosResponse<LoanResponseDto[]> =
+        await this.client.delete(`/loan/${loanId}`);
 
       return {
         success: true,
@@ -348,5 +368,27 @@ export class LibraryClient {
   public logout(): void {
     localStorage.removeItem('token');
     delete this.client.defaults.headers.common['Authorization'];
+  }
+
+  public async patchUser(userId: number, name: string, lastname: string) {
+    try {
+      const response = await this.client.patch(`/user/${userId}`, {
+        name,
+        lastname,
+      });
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
   }
 }

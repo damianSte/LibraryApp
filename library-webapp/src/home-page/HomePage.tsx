@@ -6,10 +6,6 @@ import { Box } from '@mui/material';
 function HomePage() {
   const apiClient = useApi();
 
-  apiClient.getLoans().then((response) => {
-    console.log(response);
-  });
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <MenuAppBar />

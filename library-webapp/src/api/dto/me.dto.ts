@@ -5,3 +5,9 @@ export class MeDetails {
   email: string | undefined;
   role: string | undefined;
 }
+
+export class AddNameAndLastNameDto {
+  userId: number | undefined;
+  name: string | undefined;
+  lastName: string | undefined;
+}

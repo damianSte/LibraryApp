@@ -3,6 +3,7 @@ import MenuAppBar from '../menu-app-bar/MenuAppBar';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import LoanComponent from '../loans-form/LoanComponent';
 import UserReviewListForMyAccount from './UserReviewListForMyAccount';
+import UsersProfile from './UsersProfile';
 export default function MyAccount() {
   const [selectedOption, setSelectedOption] = useState('loans');
 
@@ -12,6 +13,8 @@ export default function MyAccount() {
         return <LoanComponent />;
       case 'reviews':
         return <UserReviewListForMyAccount />;
+      case 'myProfile':
+        return <UsersProfile />;
       default:
         return null;
     }
@@ -46,6 +49,16 @@ export default function MyAccount() {
               <Grid container spacing={0}>
                 <Grid item xs={12} md={3} mt={10}>
                   <Typography variant="h6">Options</Typography>
+                  <Button
+                    onClick={() => handleOptionClick('myProfile')}
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    variant={
+                      selectedOption === 'myProfile' ? 'contained' : 'text'
+                    }
+                  >
+                    My Profile
+                  </Button>
                   <Button
                     onClick={() => handleOptionClick('loans')}
                     fullWidth

@@ -1,80 +1,79 @@
-import { getLoansPageResponseDto, getUserLoansDto } from '../api/dto/loan.dto';
 import React, { useEffect, useState } from 'react';
-import { useApi } from '../api/ApiProvider';
 import {
   Box,
-  Divider,
+  Typography,
+  Pagination,
+  TextField,
   List,
   ListItem,
   ListItemText,
-  Pagination,
-  TextField,
-  Typography,
+  Divider,
+  IconButton,
 } from '@mui/material';
+import { useApi } from '../api/ApiProvider';
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
+import { BookDto } from '../api/dto/book.dto';
+import { MeDetails } from '../api/dto/me.dto';
 
-export default function EditLoans() {
-  const [loans, setLoans] = useState<getUserLoansDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const client = useApi();
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedLoan, setSelectedLoan] = useState<getUserLoansDto | null>(
-    null
-  );
+export interface LoanProps {
+  loanId: number;
+  book: BookDto;
+  user: MeDetails;
+  loanDate: string;
+  dueDate: string;
+}
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const loansPerPage = 6;
-  const indexOfLastLoan = currentPage * loansPerPage;
-  const indexOfFirstLoan = indexOfLastLoan - loansPerPage;
-  const currentLoans = loans.slice(indexOfFirstLoan, indexOfLastLoan);
+const EditLoans: React.FC = () => {
+  const [loans, setLoans] = useState<LoanProps[]>([]);
+  const [userIdQuery, setUserIdQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const apiClient = useApi();
 
   useEffect(() => {
-    const fetchLoans = async () => {
-      const response = await client.getLoans();
-      if (response.success && response.data !== null) {
-        const sortedLoans = response.data.sort((a, b) => {
-          if (a.loanDate && b.loanDate) {
-            return (
-              new Date(b.loanDate).getTime() - new Date(a.loanDate).getTime()
-            );
-          }
-          return 0;
-        });
-        setLoans(sortedLoans);
-      } else {
-        setLoans([]);
-        console.log('No loans found');
-      }
-    };
-
     fetchLoans();
+  }, [currentPage]);
 
-    return () => {
-      setLoans([]);
-    };
-  }, [client]);
+  const fetchLoans = async () => {
+    try {
+      const loansResponse = await apiClient.getLoans(currentPage);
+      const fetchedLoans = loansResponse.data.loans || [];
+      const totalNumberOfPages = loansResponse.data.totalPages || 0;
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
+      setLoans(fetchedLoans);
+      setTotalPages(totalNumberOfPages);
+    } catch (error) {
+      console.error('Error fetching loans:', error);
+    }
   };
-
-  const handleInputChange =
-    (field: keyof getUserLoansDto) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (selectedLoan) {
-        setSelectedLoan({ ...selectedLoan, [field]: event.target.value });
-      }
-    };
-
-  const filteredLoans = loans.filter((loan) =>
-    loan.book?.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
-    setCurrentPage(page);
+    setCurrentPage(page - 1);
   };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserIdQuery(event.target.value);
+  };
+
+  const handleDeleteLoan = async (loanId: number) => {
+    const response = await apiClient.deleteLoan(loanId);
+    if (response.success) {
+      setLoans((prevLoans) =>
+        prevLoans.filter((loan) => loan.loanId !== loanId)
+      );
+      console.log('Review deleted successfully');
+    } else {
+      console.log('Failed to delete review');
+    }
+  };
+
+  const filteredLoans = loans.filter((loan) =>
+    loan.user?.id?.toString().includes(userIdQuery)
+  );
+
   return (
     <Box
       display="flex"
@@ -92,23 +91,31 @@ export default function EditLoans() {
         Loans
       </Typography>
       <TextField
-        label="Search by Title"
+        label="Search by User ID"
         variant="outlined"
         fullWidth
-        value={searchQuery}
+        value={userIdQuery}
         onChange={handleSearchChange}
         sx={{ mb: 2 }}
       />
       <Box width="100%">
         <List>
-          {filteredLoans.map((selectedLoan) => (
-            <React.Fragment key={selectedLoan.loandId}>
+          {filteredLoans.map((loan) => (
+            <React.Fragment key={loan.loanId}>
               <ListItem alignItems="flex-start" sx={{ width: '100%' }}>
                 <ListItemText
                   primary={
                     <>
                       <Typography variant="h6">
-                        {selectedLoan.book?.title ?? 'Untitled'}
+                        {loan.book.title ?? 'Untitled'}
+                      </Typography>
+
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="textPrimary"
+                      >
+                        Reader ID: {loan.user.id ?? 'Untitled'}
                       </Typography>
                     </>
                   }
@@ -120,8 +127,8 @@ export default function EditLoans() {
                         color="textPrimary"
                       >
                         Loan Date:{' '}
-                        {selectedLoan.loanDate
-                          ? new Date(selectedLoan.loanDate).toLocaleDateString()
+                        {loan.loanDate
+                          ? new Date(loan.loanDate).toLocaleDateString()
                           : 'N/A'}
                       </Typography>
                       <Typography
@@ -131,13 +138,19 @@ export default function EditLoans() {
                         display="block"
                       >
                         Due Date:{' '}
-                        {selectedLoan.dueDate
-                          ? new Date(selectedLoan.dueDate).toLocaleDateString()
+                        {loan.dueDate
+                          ? new Date(loan.dueDate).toLocaleDateString()
                           : 'N/A'}
                       </Typography>
                     </>
                   }
                 />
+                <IconButton
+                  onClick={() => handleDeleteLoan(loan.loanId)}
+                  color="primary"
+                >
+                  <BookmarkAddedIcon />
+                </IconButton>
               </ListItem>
               <Divider component="li" />
             </React.Fragment>
@@ -145,7 +158,7 @@ export default function EditLoans() {
         </List>
         <Box display="flex" justifyContent="center" mt={5}>
           <Pagination
-            count={Math.ceil(loans.length / loansPerPage)}
+            count={totalPages}
             page={currentPage}
             onChange={handlePageChange}
             showFirstButton
@@ -156,4 +169,6 @@ export default function EditLoans() {
       </Box>
     </Box>
   );
-}
+};
+
+export default EditLoans;
